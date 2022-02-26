@@ -1,0 +1,34 @@
+1.b
+speed up from scipy
+Python:  38.04173827171326
+Scipy:  0.18801188468933105
+over 1000 times faster 
+1.c 
+from line profiler
+the heavy part in the native python is the loop to generate the list matrix and perform computing 
+in scipy it generates my advanced array, and lighter to slice it, check output in rbf_lineprofiler.md
+
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  Native python
+    12      1001       1125.0      1.1      0.0      for i in range(N):
+    13   1001000    1105456.0      1.1      5.1          for j in range(N):
+    14   1000000    1082768.0      1.1      4.9              r = 0
+    15   6000000    6718961.0      1.1     30.7              for d in range(D):
+    16   5000000    9410462.0      1.9     43.0                  r += (X[j, d] - X[i, d]) ** 2
+    17   1000000    1256666.0      1.3      5.7              r = r**0.5
+    18   1000000    2314145.0      2.3     10.6              Y[i] += beta[j] * exp(-(r * theta)**2)
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    25         1          5.0      5.0      0.0      N = X.shape[0]
+    26         1          1.0      1.0      0.0      D = X.shape[1]
+    27         1     135981.0 135981.0     72.3      rbf = Rbf(X[:,0], X[:,1], X[:,2], X[:,3], X[:, 4], beta)
+    28                                               #Xtuple = tuple([X[:, i] for i in range(D)])
+    29         1         29.0     29.0      0.0      Xtuple = tuple([X[:, i] for i in range(D)])
+1.d 
+Python:  38.04173827171326
+Scipy:  0.18801188468933105
+Cython:  0.1554098129272461
+cython is even faster than scipy, even with similar code with native python, due to it compile firstly,
+But hard to debug. It requires compiling every time after the editing in the code
